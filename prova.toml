@@ -1,10 +1,16 @@
 # Prova acceptance tests: `prova` from the repo root runs the whole suite.
 [run]
 proofs = ["tests"]
-# Serial: concurrent renders collide on archetect's shared git cache for the composed libraries.
+# Serial: every proof renders the archetype, and concurrent renders collide on archetect's shared
+# git cache for the composed prompt/CI/manifest libraries.
 jobs = 1
 
-# CI runs the same suite (this overlay has no build/live tier - it renders platform files only).
+# CI runs the same suite. This archetype is a platform overlay — it generates no project, so there
+# is nothing to build or boot and a runner needs no language toolchain (E7).
 [profiles.ci]
 jobs = 1
 format = "json"
+
+# `p6m` is the org standards suite; the overlay standards are E1–E7 in its docs/standards.md §2b.
+[plugins]
+p6m = "p6m-archetypes/prova-p6m-standards@dev"

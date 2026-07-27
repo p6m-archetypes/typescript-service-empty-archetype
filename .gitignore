@@ -1,1 +1,5 @@
 .last-failed.json
+
+# LuaLS workspace config: `prova ide setup` (or any `prova` run) regenerates it, and it holds
+# absolute paths into this machine's prova data + plugin cache. Editor-local, never shared.
+.luarc.json

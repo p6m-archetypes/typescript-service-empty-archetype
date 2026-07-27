@@ -12,18 +12,6 @@ templating:
   lstrip_blocks: true
 
 catalog:
-  author:
-    source: "https://github.com/archetect-common/author-prompts-library.git"
-    library: true
-    show: false
-  org:
-    source: "https://github.com/archetect-common/org-prompts-library.git"
-    library: true
-    show: false
-  project:
-    source: "https://github.com/archetect-common/project-prompts-library.git"
-    library: true
-    show: false
   editor-config:
     source: "https://github.com/archetect-common/editor-config-library.git"
     library: true
