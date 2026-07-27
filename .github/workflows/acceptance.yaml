@@ -15,6 +15,11 @@ jobs:
       # suite renders and inspects files. prova's in-process archetect engine is all it needs.
       - uses: prova-rs/run-action@v1
         with:
+          # Pin the engine the suite is authored against. The action's own default is a fixed
+          # release that goes stale as prova moves — on v0.10.0 the `toml` global does not exist
+          # and yaml decoding is still `yaml.parse`, so every proof that reads a manifest or a
+          # workflow dies on a nil global while passing locally.
+          version: v0.11.0
           profile: ci
           # -U: floating plugin pins are tag-pins, which the git cache treats as immutable — force
           # an update so a moved pin (a standards release) is picked up on warm caches.
