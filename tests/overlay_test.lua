@@ -60,8 +60,7 @@ end
 
 -- E2 and E7 are properties of the archetype repo, not of a variant — held once.
 prova.group("typescript-empty: the archetype itself", { tags = { "standards" } }, function(g)
-  p6m.empty.standards.archetype(g, specs[1], {
-    pin_spec = "the p6m overlay layer (E1–E7) ships on prova-p6m-standards dev; repin this suite"
-      .. " to @v1 when that release is cut — YP6M-3172",
-  })
+  -- No pin_spec: prova-p6m-standards v1.7 shipped the overlay layer on 2026-07-27 and this suite
+  -- is pinned to the released @v1 tag, so E7's released-tag assertion is a full proof.
+  p6m.empty.standards.archetype(g, specs[1])
 end)

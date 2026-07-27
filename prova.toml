@@ -11,6 +11,7 @@ jobs = 1
 jobs = 1
 format = "json"
 
-# `p6m` is the org standards suite; the overlay standards are E1–E7 in its docs/standards.md §2b.
+# `p6m` is the org standards suite (released v1; the ratchet: spec bumps move the v1 tag and the
+# fleet answers). The overlay standards are E1–E7 in its docs/standards.md §2b.
 [plugins]
-p6m = "p6m-archetypes/prova-p6m-standards@dev"
+p6m = "p6m-archetypes/prova-p6m-standards@v1"
