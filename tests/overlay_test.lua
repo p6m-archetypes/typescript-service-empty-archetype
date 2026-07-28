@@ -34,6 +34,10 @@ local VARIANTS = {
     cache = "Redis",
     messaging = "Kafka",
     messaging_access = "consume",
+    -- Deliberately unlike the defaults AND unlike what the greenfield archetype produces, so the
+    -- container build can only pass by actually reading the answers.
+    build_command = "npm run compile",
+    runtime_artifact = "build/main.js",
   },
 }
 
@@ -49,6 +53,8 @@ for i, v in ipairs(VARIANTS) do
     cache = v.cache,
     messaging = v.messaging,
     messaging_access = v.messaging_access,
+    build_command = v.build_command,
+    runtime_artifact = v.runtime_artifact,
   }
 end
 
