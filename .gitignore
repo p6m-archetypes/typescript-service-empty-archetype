@@ -1,5 +1,7 @@
 .last-failed.json
 
-# LuaLS workspace config: `prova ide setup` (or any `prova` run) regenerates it, and it holds
-# absolute paths into this machine's prova data + plugin cache. Editor-local, never shared.
-.luarc.json
+# Generated LuaLS IDE artifacts — prova writes these on any run, and `prova ide setup` rewrites
+# them. `.luarc.json` holds absolute paths into THIS machine's prova data dir and plugin cache, so
+# it is never shareable; `annotations/` is regenerated from the installed prova and its plugins.
+/.luarc.json
+/annotations/
