@@ -31,7 +31,7 @@ context:prompt_text("Application Name:", "project_name", {
 -- The namespace prefix. The platform operator derives the solution and the environment
 -- back out of `{solution}-{application}-{env}`, which is what lets Shared resources
 -- (e.g. a Pulsar topic) be shared across applications in the same solution + environment.
-context:prompt_text("Solution Slug:", "org_solution_name", {
+context:prompt_text("Solution Slug:", "solution_name", {
     cases       = Cases.programming(),
     placeholder = "acme-payments",
     help        = "Kebab-case. Prefixes the Kubernetes namespace: {solution}-{application}-{env}.",
@@ -103,18 +103,21 @@ context:set("has_persistence", context:get("persistence") ~= "None")
 context:set("has_cache",       context:get("cache")       ~= "None")
 context:set("has_messaging",   context:get("messaging")   ~= "None")
 
--- The platform manifest names a database as `{{ prefix_name }}_{{ suffix_name }}`. A
--- service archetype fills those from its identity prompts; an overlay has none, so it
--- names the platform-provisioned database after the application: `<application>_db`.
--- One rule, no special case for single-word application names, and unmistakably distinct
--- from whatever database the legacy application may already carry.
-context:set("prefix_name", context:get("project_name"))
-context:set("suffix_name", "db")
+-- The platform-provisioned database. An overlay retrofits an EXISTING application, which may
+-- already carry a database of its own, so it names this one `<application>_db` — unmistakably
+-- distinct, with no special case for single-word application names. (This used to be smuggled
+-- through `prefix_name` + `suffix_name`, an identity decomposition that meant nothing here;
+-- `database_name` is the manifests library's own key for it.)
+context:set("database_name", context:get("project_name") .. "_db")
 
 -- SCM publishing (opt-in, default None) addresses the repository by these; both derive
 -- from the answers above rather than asking again.
+-- TRANSITIONAL ALIAS (YP6M-3424), mirroring p6m-identity-library's: the manifests library and
+-- this archetype's Tiltfile still address the slug as `org-solution-name`. Retire with theirs.
+context:set("org_solution_name", context:get("solution-name"), { cases = Cases.programming() })
+
 context:set("repo_name", context:get("project-name"))
-context:set("github_owner", context:get("org-solution-name"))
+context:set("github_owner", context:get("solution-name"))
 
 -- EditorConfig + gitignore (pre-seeded; the libraries skip their interactive prompt).
 -- On a retrofit these land only if the application does not already have its own —
