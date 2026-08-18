@@ -12,6 +12,10 @@ templating:
   lstrip_blocks: true
 
 catalog:
+  p6m-identity:
+    source: "https://github.com/p6m-archetypes/p6m-identity-library.git#dev"
+    library: true
+    show: false
   editor-config:
     source: "https://github.com/archetect-common/editor-config-library.git"
     library: true

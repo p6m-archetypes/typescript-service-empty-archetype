@@ -16,26 +16,19 @@
 
 local context = Context.new()
 
--- E1: the application name is the ONLY name asked. It is at once the container image
--- name, the PlatformApplication name, the directory CD writes into in the platform
--- manifests repo, and the Tilt resource. Cases.programming() derives project-name /
--- project_name / ProjectName — every shape the carried files and the composed CI and
--- platform-manifest libraries reference.
-context:prompt_text("Application Name:", "project_name", {
-    cases       = Cases.programming(),
-    placeholder = "billing-service",
-    help        = "Kebab-case. The container image name, the PlatformApplication name, and "
-        .. "the directory CD writes into in the platform manifests repo.",
-})
-
--- The namespace prefix. The platform operator derives the solution and the environment
--- back out of `{solution}-{application}-{env}`, which is what lets Shared resources
--- (e.g. a Pulsar topic) be shared across applications in the same solution + environment.
-context:prompt_text("Solution Slug:", "solution_name", {
-    cases       = Cases.programming(),
-    placeholder = "acme-payments",
-    help        = "Kebab-case. Prefixes the Kubernetes namespace: {solution}-{application}-{env}.",
-})
+-- Identity (S1). One library, one implementation — the same surface every service shape asks,
+-- so an overlay and a service archetype cannot drift on what a project or a solution is called.
+--
+-- E1 still holds: the project name is the ONLY name asked, and it is at once the container image
+-- name, the PlatformApplication name, the directory CD writes into in the platform manifests repo,
+-- and the Tilt resource. The solution slug prefixes the Kubernetes namespace
+-- (`{solution}-{application}-{env}`), which is what lets Shared resources be shared across
+-- applications in the same solution and environment.
+--
+-- `entity = false`: an overlay generates no domain code, so a CRUD entity would be a prompt whose
+-- answer nothing reads (E2 / S1b).
+local identity = require("p6m-identity")
+identity.prompt(context, { entity = false })
 
 -- Where CI publishes the image to. No default — registry hostnames are company-specific.
 context:prompt_text("Image Registry:", "image_registry", {
@@ -112,12 +105,6 @@ context:set("database_name", context:get("project_name") .. "_db")
 
 -- SCM publishing (opt-in, default None) addresses the repository by these; both derive
 -- from the answers above rather than asking again.
--- TRANSITIONAL ALIAS (YP6M-3424), mirroring p6m-identity-library's: the manifests library and
--- this archetype's Tiltfile still address the slug as `org-solution-name`. Retire with theirs.
-context:set("org_solution_name", context:get("solution-name"), { cases = Cases.programming() })
-
-context:set("repo_name", context:get("project-name"))
-context:set("github_owner", context:get("solution-name"))
 
 -- EditorConfig + gitignore (pre-seeded; the libraries skip their interactive prompt).
 -- On a retrofit these land only if the application does not already have its own —
