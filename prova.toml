@@ -3,7 +3,7 @@ prova = ">= 0.16"
 
 # Prova acceptance tests: `prova` from the repo root runs the whole suite.
 [run]
-proofs = ["tests"]
+proofs = ["proofs"]
 # Serial: every proof renders the archetype, and concurrent renders collide on archetect's shared
 # git cache for the composed prompt/CI/manifest libraries.
 jobs = 1
