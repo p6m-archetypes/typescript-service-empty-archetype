@@ -67,6 +67,9 @@ end
 -- E2 and E7 are properties of the archetype repo, not of a variant — held once.
 prova.group("typescript-empty: the archetype itself", { tags = { "standards" } }, function(g)
   p6m.empty.standards.archetype(g, specs[1])
+
+  -- S1c: the fleet's layout vocabulary, declared and pinned.
+  p6m.standards.layout(g, "overlay")
 end)
 
 -- E7's released-tag bar, as the `p6m-pin` reminder: DUE while the manifest pins `dev` (the
