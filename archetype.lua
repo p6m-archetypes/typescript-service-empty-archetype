@@ -1,97 +1,97 @@
--- TypeScript Service Platform Overlay ("empty" archetype).
---
--- Generates ONLY the platform servicing layer — CI/CD workflows, Kubernetes platform
--- manifests, container builds, and repo hygiene files — with no project
--- scaffolding and no domain code. Run it against an EXISTING project to retrofit it:
--- everything renders in place at the destination root.
---
---   archetect render .../typescript-service-empty-archetype /path/to/existing-project
---
--- The prompt surface is the TACTICAL MINIMUM (prova-p6m-standards docs/standards.md
--- §2b, E1–E2): the deployment facts the rendered CI/CD actually consumes, and nothing
--- else. No author identity, no org × solution split, no project prefix/suffix — a
--- service archetype needs those to name code it is generating, and this generates none.
--- The overlay's own suite holds that bar: it renders from the tactical answers with no
--- defaults fallback, so a prompt whose answer nothing reads fails the build.
-
 local context = Context.new()
 
--- Identity (S1). One library, one implementation — the same surface every service shape asks,
--- so an overlay and a service archetype cannot drift on what a project or a solution is called.
+-- The prompt surface is laid out in PAGES and SECTIONS — the author's grouping intent, carried to
+-- every renderer: a wizard step in Ybor Studio, a titled heading in the terminal, a block comment
+-- in an answers template. Keys are PINNED because a wizard routes on them while titles are display
+-- text, and pages appear and disappear between rounds of the hybrid drive.
 --
--- E1 still holds: the project name is the ONLY name asked, and it is at once the container image
--- name, the PlatformApplication name, the directory CD writes into in the platform manifests repo,
--- and the Tilt resource. The solution slug prefixes the Kubernetes namespace
--- (`{solution}-{application}-{env}`), which is what lets Shared resources be shared across
--- applications in the same solution and environment.
---
--- `entity = false`: an overlay generates no domain code, so a CRUD entity would be a prompt whose
--- answer nothing reads (E2 / S1b).
+-- The page and section keys are the FLEET's, shared with every service archetype so a form reads
+-- identically whatever the shape. What differs here is what an overlay actually asks: no entity
+-- (it generates no domain code), and a Container Build page no service archetype needs, because a
+-- retrofit cannot assume the application's internal layout (E1b).
 local identity = require("p6m-identity")
-identity.prompt(context, { entity = false })
 
--- Where CI publishes the image to. No default — registry hostnames are company-specific.
-context:prompt_text("Image Registry:", "image_registry", {
-    placeholder = "ghcr.io",
-    help        = "Container image registry hostname (e.g. ghcr.io, "
-        .. "123456789.dkr.ecr.us-east-1.amazonaws.com).",
-})
+context:page({ title = "Project", key = "project",
+               help = "The application being platform-ized." }, function(ctx)
+    -- E1: the project name is the ONLY name asked. It is at once the container image name, the
+    -- PlatformApplication name, the directory CD writes into in the platform manifests repo, and
+    -- the Tilt resource. `entity = false`: an overlay generates no domain code, so a CRUD entity
+    -- would be a prompt whose answer nothing reads (E2 / S1b).
+    identity.prompt_project(ctx, { entity = false })
 
--- The transport the existing application already speaks. It decides which port variable
--- the manifests inject (SERVER_PORT vs GRPC_PORT) and the protocol the ports declare —
--- so a gRPC service being platform-ized gets a correct manifest, not an HTTP one.
-context:prompt_select("Protocol:", "protocol", {
-    "REST", "gRPC", "GraphQL",
-}, { default = "REST" })
+    ctx:section({ title = "Platform", key = "platform",
+                  help = "Where this application deploys and publishes." }, function(ctx)
+        -- The solution slug prefixes the Kubernetes namespace (`{solution}-{application}-{env}`),
+        -- which is what lets Shared resources be shared across a solution and environment.
+        identity.prompt_solution(ctx)
 
--- The ports the manifests publish and the readiness probe targets. `debug` is not asked:
--- nothing the overlay renders publishes it.
-require("ports").prompt(context, {
-    ports = {
-        { "service", help = "The port the application already serves traffic on" },
-        { "management", help = "The port /health and /metrics are served on" },
-    },
-})
+        -- Where CI publishes the image to. No default — registry hostnames are company-specific.
+        ctx:prompt_text("Image Registry:", "image_registry", {
+            placeholder = "ghcr.io",
+            help        = "Container image registry hostname (e.g. ghcr.io, "
+                .. "123456789.dkr.ecr.us-east-1.amazonaws.com).",
+        })
+    end)
 
--- How to build and run the EXISTING application. These two are the only facts about the
--- application's internals the overlay needs, and it cannot guess them: a retrofit target may be a
--- single crate or a workspace, a flat module or a multi-module build, src/ layout or not. Defaults
--- match what this language's own p6m service archetype produces, so a greenfield-shaped repo needs
--- no answer; anything else overrides one line instead of rewriting a Dockerfile.
-context:prompt_text("Build Command:", "build_command", {
-    default = "pnpm build",
-    help    = "Built inside the builder image, after the package manager install.",
-})
+    ctx:section({ title = "Service", key = "service",
+                  help = "How the existing application serves traffic." }, function(ctx)
+        -- The transport the existing application already speaks. It decides which port variable
+        -- the manifests inject (SERVER_PORT vs GRPC_PORT) and the protocol the ports declare — so
+        -- a gRPC service being platform-ized gets a correct manifest, not an HTTP one.
+        ctx:prompt_select("Protocol:", "protocol", { "REST", "gRPC", "GraphQL" },
+            { default = "REST" })
 
-context:prompt_text("Runtime Artifact:", "runtime_artifact", {
-    default = "dist/index.js",
-    help    = "Entry module the build produced, run with node.",
-})
+        -- The ports the manifests publish and the readiness probe targets. `debug` is not asked:
+        -- nothing the overlay renders publishes it.
+        require("ports").prompt(ctx, {
+            ports = {
+                { "service", help = "The port the application already serves traffic on" },
+                { "management", help = "The port /health and /metrics are served on" },
+            },
+        })
+    end)
+end)
 
--- Platform resources. These drive the platform manifests' resourceRequirements ONLY —
--- the platform provisions them and injects connection secrets. No connection code is
--- woven: that is project code, and this overlay never touches project code.
--- object_storage is omitted: it produces no platform manifest artifact.
-context:prompt_select("Persistence:", "persistence", {
-    "None", "PostgreSQL", "MySQL",
-}, { default = "None" })
+context:page({ title = "Container Build", key = "container_build",
+               help = "How to build and run the EXISTING application. An overlay retrofits a repo "
+                   .. "it did not generate, so it cannot assume the layout (E1b)." }, function(ctx)
+    ctx:prompt_text("Build Command:", "build_command", {
+        default = "pnpm build",
+        help    = "Built inside the builder image, after the package manager install.",
+    })
 
-context:prompt_select("Cache:", "cache", {
-    "None", "Redis",
-}, { default = "None" })
+    ctx:prompt_text("Runtime Artifact:", "runtime_artifact", {
+        default = "dist/index.js",
+        help    = "Entry module the build produced, run with node.",
+    })
+end)
 
-context:prompt_select("Messaging:", "messaging", {
-    "None", "Kafka", "Pulsar",
-}, { default = "None" })
+context:page({ title = "Resources", key = "resources",
+               help = "Platform-provisioned backing services. These drive the manifests' resourceRequirements only — no connection code is woven into the application." }, function(ctx)
+    -- Platform resources. These drive the platform manifests' resourceRequirements ONLY —
+    -- the platform provisions them and injects connection secrets. No connection code is
+    -- woven: that is project code, and this overlay never touches project code.
+    -- object_storage is omitted: it produces no platform manifest artifact.
+    ctx:prompt_select("Persistence:", "persistence", {
+        "None", "PostgreSQL", "MySQL",
+    }, { default = "None" })
 
-if context:get("messaging") ~= "None" then
-    context:prompt_select("Messaging Access:", "messaging_access", {
-        "produce", "consume",
-    }, { default = "produce" })
-else
-    context:set("messaging_access", "produce")
-end
+    ctx:prompt_select("Cache:", "cache", {
+        "None", "Redis",
+    }, { default = "None" })
 
+    ctx:prompt_select("Messaging:", "messaging", {
+        "None", "Kafka", "Pulsar",
+    }, { default = "None" })
+
+    if ctx:get("messaging") ~= "None" then
+        ctx:prompt_select("Messaging Access:", "messaging_access", {
+            "produce", "consume",
+        }, { default = "produce" })
+    else
+        ctx:set("messaging_access", "produce")
+    end
+end)
 context:set("has_persistence", context:get("persistence") ~= "None")
 context:set("has_cache",       context:get("cache")       ~= "None")
 context:set("has_messaging",   context:get("messaging")   ~= "None")
@@ -121,7 +121,10 @@ gitignore.prompt(context, {
 })
 
 local scm = require("scm")
-scm.prompt(context)
+context:page({ title = "Source Control", key = "source_control",
+               help = "Optionally create and publish the repository." }, function(ctx)
+    scm.prompt(ctx)
+end)
 
 if archetype.switches.is_enabled("debug-context") then
     log.info(archetype.description .. " Context:")

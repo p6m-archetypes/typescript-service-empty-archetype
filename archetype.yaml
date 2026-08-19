@@ -5,7 +5,7 @@ frameworks: ["Fastify"]
 tags: ["overlay", "empty", "retrofit", "ci", "platform", "typescript"]
 
 requires:
-  archetect: "3.0.0"
+  archetect: "3.4.3"
 
 templating:
   trim_blocks: true
