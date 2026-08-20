@@ -1,4 +1,4 @@
-description: "TypeScript Service Platform Overlay"
+description: "TypeScript Retrofit Overlay"
 authors: ["Jimmie Fulton <jimmie@ybor.ai>"]
 languages: ["TypeScript"]
 frameworks: ["Fastify"]

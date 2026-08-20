@@ -1,6 +1,6 @@
 # typescript-service-empty-archetype
 
-TypeScript **Service Platform Overlay** — generates only the platform *servicing layer* for a
+TypeScript **Retrofit Overlay** — generates only the platform *servicing layer* for a
 service and nothing else. Run it against an **existing** TypeScript project to retrofit it with:
 
 - `.github/workflows/` — CI build + cut-tag (`typescript-ci`)
