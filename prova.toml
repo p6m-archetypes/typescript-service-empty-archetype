@@ -22,4 +22,4 @@ format = "json"
 # this pin rides a branch (silent again on a released tag); heed it (`prova --heed=p6m-pin`, or a
 # profile's `heed = ["p6m-pin"]`) when the window closes.
 [dependencies]
-p6m = { git = "https://github.com/p6m-archetypes/prova-p6m-standards", branch = "dev" }
+p6m = { git = "https://github.com/p6m-archetypes/prova-p6m-standards", tag = "v1" }
