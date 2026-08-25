@@ -1,0 +1,25 @@
+name: Acceptance
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # No language toolchain step on purpose (E7): this archetype is a platform overlay, so the
+      # suite renders and inspects files. prova's in-process archetect engine is all it needs.
+      - uses: prova-rs/run-action@v1
+        with:
+          # No `version:` here on purpose. run-action@v1 carries the current default and is bumped
+          # with each prova release, so tracking the tag is what keeps this suite on the engine the
+          # fleet runs. Pinning locally silently freezes it: these six sat on v0.11.0 while the fleet
+          # moved to v0.14.0, and a pin is invisible next to a tag that looks up to date.
+          profile: ci
+          # -U: floating plugin pins are tag-pins, which the git cache treats as immutable — force
+          # an update so a moved pin (a standards release) is picked up on warm caches.
+          args: "-U"
