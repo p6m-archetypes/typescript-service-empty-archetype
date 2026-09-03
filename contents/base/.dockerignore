@@ -1,0 +1,10 @@
+# Keep host and CI build state out of the image build context — both Dockerfiles COPY . .,
+# and CI installs dependencies before building the image, so without these the runner's
+# build trees ride into the context and can poison the in-image build (YP6M-3665).
+.git/
+.jj/
+.platform/
+*.md
+dist/
+node_modules/
+dist/
