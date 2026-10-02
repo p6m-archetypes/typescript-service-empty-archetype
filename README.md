@@ -29,7 +29,7 @@ generates none.
 | Prompt | Consumed by |
 |---|---|
 | **Application Name** | the image name, the `PlatformApplication` name, the directory CD writes into in the platform manifests repo, the Tilt resource |
-| **Solution Slug** | the image path, and the `{solution}-{application}-{env}` namespace the platform reads the solution and environment back out of |
+| **Organization** | the GitHub organization: the image path, and the `{organization}-{application}-{env}` namespace the platform reads the organization and environment back out of |
 | **Image Registry** | the image path |
 | **Protocol** (REST/gRPC/GraphQL) | whether the manifests inject `SERVER_PORT` or `GRPC_PORT`, and the protocol the ports declare |
 | **Service / Management Port** | the published ports, the container `EXPOSE`, the readiness probe |
@@ -40,7 +40,7 @@ Those first three are the only answers with no default, so a headless render nee
 
 ```bash
 archetect render <source> /path/to/existing-project --headless \
-  -a project_name=billing-service -a org_solution_name=acme-payments -a image_registry=ghcr.io
+  -a project_name=billing-service -a organization_name=acme-payments -a image_registry=ghcr.io
 ```
 
 ## Resources

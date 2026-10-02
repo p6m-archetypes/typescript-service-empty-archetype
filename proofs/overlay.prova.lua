@@ -23,12 +23,12 @@ local p6m = require("p6m")
 local VARIANTS = {
   {
     application = "Example Service",
-    solution = "acme-platform",
+    organization = "acme-platform",
     protocol = "REST",
   },
   {
     application = "Billing",
-    solution = "acme-payments",
+    organization = "acme-payments",
     protocol = "gRPC",
     persistence = "PostgreSQL",
     cache = "Redis",
@@ -46,7 +46,7 @@ for i, v in ipairs(VARIANTS) do
   specs[i] = p6m.empty.spec{
     language = "typescript",
     application = v.application,
-    solution = v.solution,
+    organization = v.organization,
     registry = "ghcr.io/acme",
     protocol = v.protocol,
     persistence = v.persistence,

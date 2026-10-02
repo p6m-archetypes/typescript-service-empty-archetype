@@ -21,9 +21,9 @@ context:page({ title = "Project", key = "project",
 
     ctx:section({ title = "Platform", key = "platform",
                   help = "Where this application deploys and publishes." }, function(ctx)
-        -- The solution slug prefixes the Kubernetes namespace (`{solution}-{application}-{env}`),
-        -- which is what lets Shared resources be shared across a solution and environment.
-        identity.prompt_solution(ctx)
+        -- The GitHub organization prefixes the Kubernetes namespace (`{organization}-{application}-{env}`),
+        -- which is what lets Shared resources be shared across an organization and environment.
+        identity.prompt_organization(ctx)
 
         -- The registry prompt comes from the manifests library, the same as every other shape.
         -- It used to be a second copy here, and the copies drifted: this one carried a `ghcr.io`
