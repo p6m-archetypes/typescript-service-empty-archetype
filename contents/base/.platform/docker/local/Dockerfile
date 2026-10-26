@@ -6,6 +6,7 @@
 # match what this language's p6m service archetype produces, so a greenfield-shaped repo needs
 # neither.
 
+# Node.js 22.x. Floor is 22.23.4 (Oct 2026 security release); rebuild without a cached base image to pick up patches.
 FROM node:22-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm
