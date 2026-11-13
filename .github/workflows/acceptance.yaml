@@ -10,7 +10,7 @@ jobs:
   acceptance:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # No language toolchain step on purpose (E7): this archetype is a platform overlay, so the
       # suite renders and inspects files. prova's in-process archetect engine is all it needs.
       - uses: prova-rs/run-action@v1
